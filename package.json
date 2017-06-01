@@ -1,0 +1,24 @@
+{
+  "name": "mpicorrector",
+  "version": "1.0.0",
+  "description": "Corrector de MPI con servicios SISA",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andes/mpiCorrector.git"
+  },
+  "author": "Team MPI",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/andes/mpiCorrector/issues"
+  },
+  "homepage": "https://github.com/andes/mpiCorrector#readme",
+  "dependencies": {
+    "@andes/match": "^0.1.9",
+    "http": "0.0.0",
+    "mongodb": "^2.2.27"
+  }
+}

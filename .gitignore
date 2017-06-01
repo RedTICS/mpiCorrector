@@ -1,0 +1,14 @@
+node_modules
+typings
+
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+.vscode
+config.ts
+config.js
+*.js.map
+*.js
