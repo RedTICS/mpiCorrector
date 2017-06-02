@@ -8,7 +8,6 @@ import {
     PacienteMpi
 } from './pacienteMpi';
 
-//let servSisa = new ServicioSisa();
 let match = new matching();
 
 // servicioMatchSisa era el nombre de la clase

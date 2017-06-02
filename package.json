@@ -4,8 +4,12 @@
   "description": "Corrector de MPI con servicios SISA",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+   "startNode": "tsc && gulp && concurrently \"npm run node\" ",
+    "start": "concurrently \"npm run tsc:w\" \"npm run node\" ",
+    "node": "nodemon ./index.js",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "postinstall": "node ./postinstall/index.js"
   },
   "repository": {
     "type": "git",
