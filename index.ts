@@ -13,11 +13,13 @@ function corregirMpi() {
                 })
                 .catch((err) => {
                     console.error('Error**:' + err);
+                    process.exit(0);
                 });
         })
         .catch((err2) => {
-                console.error('Error**:' + err2);
-        });        
+            console.error('Error**:' + err2);
+            process.exit(0);
+        });
 }
 /* Inicio de la app */
 corregirMpi();

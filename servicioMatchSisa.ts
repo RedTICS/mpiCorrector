@@ -1,8 +1,6 @@
 import * as config from './config';
 import * as mongodb from 'mongodb';
-import {
-    servicioSisa
-} from '../api/utils/servicioSisa'; /* Esto hay que corregirlo y enviarlo a un paquete a parte */
+import { matchSisa } from '../api/utils/servicioSisa'; /* Esto hay que corregirlo y enviarlo a un paquete a parte */
 import {
     matching
 } from '@andes/match';
@@ -10,93 +8,8 @@ import {
     PacienteMpi
 } from './pacienteMpi';
 
-let servSisa = new servicioSisa();
+//let servSisa = new ServicioSisa();
 let match = new matching();
-
-
-// Función de algoritmo de matcheo para servicio de sisa
-function matchSisa(paciente) {
-    //Verifica si el paciente tiene un documento valido y realiza la búsqueda a través de Sisa
-    var matchPorcentaje = 0;
-    var pacienteSisa = {};
-    var weights = config.pesos;
-
-    //Se buscan los datos en sisa y se obtiene el paciente
-    return new Promise((resolve, reject) => {
-
-        if (paciente.documento) {
-            if (paciente.documento.length >= 6) {
-                servSisa.getSisaCiudadano(paciente.documento, config.usuarioSisa, config.passwordSisa)
-                    .then((resultado) => {
-                        if (resultado) {
-                            //Verifico el resultado devuelto por el rest de Sisa
-                            if (resultado[0] == 200) {
-                                switch (resultado[1].Ciudadano.resultado) {
-                                    case 'OK':
-                                        if (resultado[1].Ciudadano.identificadoRenaper && resultado[1].Ciudadano.identificadoRenaper != "NULL") {
-                                            pacienteSisa = servSisa.formatearDatosSisa(resultado[1].Ciudadano);
-                                            matchPorcentaje = match.matchPersonas(paciente, pacienteSisa, weights, config.tipoAlgoritmoMatcheo);
-                                            resolve([{
-                                                _id: paciente._id
-                                            }, matchPorcentaje, pacienteSisa]);
-                                        } else {
-                                            resolve([{
-                                                _id: paciente._id
-                                            }, 0, {}]);
-                                        }
-                                        break;
-                                    case 'MULTIPLE_RESULTADO':
-                                        var sexo = "F";
-                                        if (paciente.sexo == "femenino") {
-                                            sexo = "F";
-                                        }
-                                        if (paciente.sexo == "masculino") {
-                                            sexo = "M";
-                                        }
-                                        servSisa.getSisaCiudadano(paciente.documento, config.usuarioSisa, config.passwordSisa, sexo)
-                                            .then((res) => {
-                                                if (res[1].Ciudadano.resultado == 'OK') {
-                                                    pacienteSisa = servSisa.formatearDatosSisa(res[1].Ciudadano);
-                                                    matchPorcentaje = match.matchPersonas(paciente, pacienteSisa, weights, 'Levenshtein');
-                                                    resolve([{
-                                                        _id: paciente._id
-                                                    }, matchPorcentaje, pacienteSisa]);
-                                                }
-
-                                            })
-                                            .catch((err) => {
-                                                reject(err);
-                                            })
-
-                                    default:
-                                        resolve([{
-                                            _id: paciente._id
-                                        }, 0]);
-                                        break;
-                                }
-                            }
-                        }
-                        resolve([{
-                            _id: paciente._id
-                        }, 0, {}]);
-                    })
-                    .catch((err) => {
-                        console.error('Error consulta rest Sisa:' + err)
-                        reject(err);
-                    });
-                // setInterval(consultaSisa,100);
-            } else {
-                resolve([{
-                    _id: paciente._id
-                }, matchPorcentaje, {}]);
-            }
-        } else {
-            resolve([{
-                _id: paciente._id
-            }, matchPorcentaje, {}]);
-        }
-    })
-}
 
 // servicioMatchSisa era el nombre de la clase
 export function validarPacienteEnSisa(token) {
@@ -125,7 +38,7 @@ export function validarPacienteEnSisa(token) {
                         db.close(); //Cerramos la conexión a la bd de MPI
                         resolve('fin');
                     })
-                    cursorStream.on('error', function (){
+                    cursorStream.on('error', function () {
                         db.close(); // Cerramos la bd y rejectamos el error que pudiera haber
                         reject('error mongo stream');
                     })
@@ -134,11 +47,13 @@ export function validarPacienteEnSisa(token) {
                             // Se realiza una pausa para realizar la consulta a Sisa
                             cursorStream.pause();
                             let paciente: any = data;
-                            servSisa.matchSisa(paciente).then(res => {
+                            matchSisa(paciente).then(res => {
                                 if (res) {
                                     let operationsMpi = new PacienteMpi();
+                                    //console.log("RESPUESTA ----", res);
                                     let match = res["matcheos"].matcheo // Valor del matcheo de sisa
                                     let pacienteSisa = res["matcheos"].datosPaciente; //paciente con los datos de Sisa originales
+                                    //console.log("MATCHHH ----", match);
                                     if (match >= 95) {
                                         //Si el matcheo es mayor a 95% tengo que actualizar los datos en MPI
                                         console.log('apellido y nombres segun sisa: ', pacienteSisa.nombre + ' ' + pacienteSisa.apellido);
@@ -162,16 +77,19 @@ export function validarPacienteEnSisa(token) {
                                     }
                                     //Siempre marco que paso por sisa
                                     paciente.entidadesValidadoras.push('Sisa');
-                                    console.log('El paciente actualizado: ',paciente);
+                                    console.log('El paciente actualizado: ', paciente);
                                     //Hacemos el update en el repositorio MPI
                                     operationsMpi.actualizaUnPacienteMpi(paciente, token)
                                         .then((rta) => {
                                             console.log('El paciente de MPI ha sido corregido por SISA: ', paciente);
                                             cursorStream.resume(); //Reanudamos el proceso
+                                        }).catch((err) => {
+                                            console.log('Error al intentar corregir El paciente de MPI con datos de SISA: ', paciente);
+                                            reject(err);
                                         });
-                                        
+
                                 }
-                               
+
                             })
                         }
                     })
