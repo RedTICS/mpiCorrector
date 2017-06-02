@@ -5,10 +5,10 @@
     "main": "index.js",
     "scripts": {
         "startNode": "tsc && gulp && concurrently \"npm run node\" ",
-        "start": "concurrently \"npm run tsc:w\" \"npm run node\" ",
+        "start": "concurrently \"npm run tsc:v\" \"npm run node\" ",
         "node": "node ./index.js",
         "tsc": "tsc",
-        "tsc:w": "tsc -w",
+        "tsc:v": "tsc -v",
         "postinstall": "node ./postinstall/index.js"
     },
     "repository": {
