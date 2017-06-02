@@ -1,7 +1,7 @@
 import * as config from './config';
 import * as mongodb from 'mongodb';
 import {
-    servicioSisa
+    ServicioSisa
 } from '../api/utils/servicioSisa'; /* Esto hay que corregirlo y enviarlo a un paquete a parte */
 import {
     matching
@@ -10,7 +10,7 @@ import {
     PacienteMpi
 } from './pacienteMpi';
 
-let servSisa = new servicioSisa();
+let servSisa = new ServicioSisa();
 let match = new matching();
 
 
