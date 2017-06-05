@@ -9,6 +9,7 @@ function corregirMpi() {
             sisaService.validarPacienteEnSisa(value.token)
                 .then((rta: any) => {
                     console.log('finaliza proceso', rta);
+                    console.log('Fecha de ejecución: ', new Date().toString());
                     process.exit(0);
                 })
                 .catch((err) => {
