@@ -1,6 +1,7 @@
 import * as config from './config';
+import * as configPrivate from './config.private';
 import * as mongodb from 'mongodb';
-import { matchSisa } from '../api/utils/servicioSisa'; /* Esto hay que corregirlo y enviarlo a un paquete a parte */
+import { matchSisa } from '../api/utils/servicioSisa';
 import {
     matching
 } from '@andes/match';
@@ -12,8 +13,8 @@ let match = new matching();
 
 // servicioMatchSisa era el nombre de la clase
 export function validarPacienteEnSisa(token) {
-    let url = config.urlMongoMpi;
-    let urlSisaRejected = config.urlMongoSisaRejected;
+    let url = configPrivate.urlMongoMpi;
+    let urlSisaRejected = configPrivate.urlMongoSisaRejected;
     let coleccion = 'paciente';
     let coleccionRejected = 'sisaRejected';
     // Esta condición es para obtener todos los pacientes que no tengan la entidadValidadora "Sisa" o bien el campo no exista.
