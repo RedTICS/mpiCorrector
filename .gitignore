@@ -6,8 +6,9 @@ logs
 *.log
 npm-debug.log*
 
+# Archivos de configuración
+config.private.ts
+
 .vscode
-config.ts
-config.js
 *.js.map
 *.js
