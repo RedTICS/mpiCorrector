@@ -28,7 +28,6 @@ export function validarPacienteEnSisa(token) {
 
             mongodb.MongoClient.connect(url, function (err, db) {
                 if (err) {
-                    console.log('Error al conectarse a Base de Datos: ', err);
                     db.close();
                     reject('error');
                 } else {
