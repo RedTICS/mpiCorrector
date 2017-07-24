@@ -50,13 +50,10 @@ export function validarPacienteEnSisa(token) {
                             matchSisa(paciente).then(res => {
                                 if (res) {
                                     let operationsMpi = new PacienteMpi();
-                                    //console.log("RESPUESTA ----", res);
                                     let match = res["matcheos"].matcheo // Valor del matcheo de sisa
                                     let pacienteSisa = res["matcheos"].datosPaciente; //paciente con los datos de Sisa originales
-                                    //console.log("MATCHHH ----", match);
                                     if (match >= 95) {
-                                        //Si el matcheo es mayor a 95% tengo que actualizar los datos en MPI
-                                        console.log('apellido y nombres segun sisa: ', pacienteSisa.nombre + ' ' + pacienteSisa.apellido);
+                                        // Si el matcheo es mayor a 95% tengo que actualizar los datos en MPI
                                         paciente.nombre = pacienteSisa.nombre;
                                         paciente.apellido = pacienteSisa.apellido;
                                     } else {
@@ -77,14 +74,11 @@ export function validarPacienteEnSisa(token) {
                                     }
                                     //Siempre marco que paso por sisa
                                     paciente.entidadesValidadoras.push('Sisa');
-                                    console.log('El paciente actualizado: ', paciente);
                                     //Hacemos el update en el repositorio MPI
                                     operationsMpi.actualizaUnPacienteMpi(paciente, token)
                                         .then((rta) => {
-                                            console.log('El paciente de MPI ha sido corregido por SISA: ', paciente);
                                             cursorStream.resume(); //Reanudamos el proceso
                                         }).catch((err) => {
-                                            console.log('Error al intentar corregir El paciente de MPI con datos de SISA: ', paciente);
                                             reject(err);
                                         });
 

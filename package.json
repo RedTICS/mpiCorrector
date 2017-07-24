@@ -23,7 +23,9 @@
     "homepage": "https://github.com/andes/mpiCorrector#readme",
     "dependencies": {
         "@andes/match": "^0.1.9",
+        "@types/node": "^8.0.15",
         "http": "0.0.0",
-        "mongodb": "^2.2.27"
+        "mongodb": "^2.2.27",
+        "process": "^0.11.10"
     }
 }
